@@ -37,7 +37,7 @@ $ npm install --save tumblr-upload
 
 ## Setup
 
-`tumblr-upload` simulates the press of the Save button in their backend, so it needs your own valid and current cookies.
+`tumblr-upload` simulates the press of the Save button in their backend, so it needs your own valid and current cookies. The cookie recovery process only takes a minute and it has to be done just once (per blog).
 
 ### Getting your credentials
 
