@@ -33,17 +33,14 @@ try {
 	return;
 }
 
-function callback (err, success) {
+function callback (err) {
 	if (err) {
 		console.error(logSymbols.error, 'Failed to upload:', err);
 		process.exit(1);
 		return;
 	}
-	if (success) {
-		console.log(logSymbols.success, 'Uploaded');
-		process.exit(0);
-	}
-	console.warn('The unexpected happened. I don\'t know whether it was uploaded.');
+	console.log(logSymbols.success, 'Uploaded');
+	process.exit(0);
 }
 
 try {

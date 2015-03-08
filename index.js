@@ -15,7 +15,7 @@ var appRoots = [
  * Set tumblr account to accept future uploads
  * @param {object|array} c  Credentials to use, object or array in this order: tumblrId, anonId, pfe, pfp, pfs, pfu
  */
-function Uploader (c) {
+function Blog (c) {
 	var blog = this;
 	if (c && c.length === 6) {
 		c = {
@@ -40,7 +40,7 @@ function Uploader (c) {
  * @param  {Function} callback      Function to call after the upload is done or has failed
  * @return {ClientRequest}          Node ClientRequest method, can be .abort()'ed
  */
-Uploader.prototype.upload = function (htmlTemplate, callback) {
+Blog.prototype.upload = function (htmlTemplate, callback) {
 	var pwd = this.pwd;
 	var options = {
 		host: 'www.tumblr.com',
@@ -49,7 +49,7 @@ Uploader.prototype.upload = function (htmlTemplate, callback) {
 		method: 'POST',
 		headers: {
 			'x-requested-with': 'XMLHttpRequest',
-			'x-for-issues': 'https://github.com/bfred-it/node-tumblr-upload',
+			'x-for-issues': 'https://github.com/bfred-it/tumblr-upload',
 			'pragma': 'no-cache',
 			'content-type': 'application/json',
 			'accept': 'application/json, text/j avascript, */*; q=0.01',
@@ -81,7 +81,7 @@ Uploader.prototype.upload = function (htmlTemplate, callback) {
 					//verify that it's a valid json response
 					JSON.parse(response);
 
-					callback(false, true);
+					callback(false);
 				} catch (e) {
 					callback('Failed parsing of response: ' + response);
 				}
@@ -102,7 +102,7 @@ Uploader.prototype.upload = function (htmlTemplate, callback) {
 
 /**
  * Upload specified template and use the settings in tumblr-upload.yml file
- * @see  Uploader.prototype.upload
+ * @see  Blog.prototype.upload
  */
 function upload (htmlTemplate, callback) {
 	var c, paths = [];
@@ -127,8 +127,8 @@ function upload (htmlTemplate, callback) {
 	}
 
 	// upload template
-	return new Uploader(c).upload(htmlTemplate, callback);
+	return new Blog(c).upload(htmlTemplate, callback);
 }
 
-module.exports = Uploader;
-module.exports.upload = upload;
+module.exports = upload;
+module.exports.Blog = Blog;
