@@ -13,10 +13,20 @@ var appRoots = [
 
 /**
  * Set tumblr account to accept future uploads
- * @param {object} c  Credentials to use: tumblrId, anonId, pfe, pfp, pfs, pfu
+ * @param {object|array} c  Credentials to use, object or array in this order: tumblrId, anonId, pfe, pfp, pfs, pfu
  */
 function Uploader (c) {
 	var blog = this;
+	if (c && c.length === 6) {
+		c = {
+			tumblrId: c[0],
+			anonId:   c[1],
+			pfe:      c[2],
+			pfp:      c[3],
+			pfs:      c[4],
+			pfu:      c[5],
+		};
+	}
 	if (!c || !c.tumblrId || !c.anonId || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
 		throw Error('Credentials missing! Use tumblr-upload.yml or specify them when calling upload()');
 	}
