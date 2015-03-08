@@ -41,7 +41,7 @@ $ npm install --save tumblr-upload
 
 ### Getting your credentials
 
-Cookies will be invalidated on logout, so it's suggested to do the following in an incognito window and to close it afterwards without logging out.
+Cookies will be invalidated on logout, so it's suggested to do the following in an incognito window and to close it afterwards without logging out. Chrome was used for these steps:
 
 1. Go to edit your Tumblr theme
 	1. Log into Tumblr
@@ -54,10 +54,10 @@ Cookies will be invalidated on logout, so it's suggested to do the following in 
 	6. Open your browser developer tools
 	7. Open the Network tab and enable it if necessary
 	8. Press the **Save** button on the site
-3. You should see a POST request in the Network tab, the name you see is the `tumblrId` you will need later
-4. Select the request
-5. Visit the Cookies tab, you should see something like this: 
-  ![Network tab, cookies view](media/cookies.png)
+3. You should see a POST request in the Network tab, select it
+4. Scroll to the bottom and copy the values of `id` and `user_form_key`
+  ![Network tab, headers](media/network-tab.png)
+5. Visit the Cookies tab
 6. Copy the values of the cookies `anon_id`, `pfe`, `pfp`, `pfs`, and `pfu`
 
 ### Using your credentials
@@ -67,8 +67,9 @@ You can specify these values [in node](#with-credentials-passed-as-an-argument),
 #### Sample `tumblr-upload.yml`
 
 ```yml
-tumblrId: my-special-tumblr
-anonId: HTWJBOYOABHOFGDSLQIXNISORNJCVXSZ
+tumblr_id: my-special-tumblr
+user_form_key: cqDwBjBTmy2oQHmyCFI574NNJQk
+anon_id: HTWJBOYOABHOFGDSLQIXNISORNJCVXSZ
 pfe: 1433542234
 pfp: ihx7GPOIpOm1YoVN1Np7awxBmbXdsz4rHDFPn6z4
 pfs: SpfJuvtJ5jxoDqCQ7qF1wA5mVdw
@@ -102,8 +103,9 @@ var fs = require('fs');
 var template = fs.readFileSync('index.tumblr.html', 'utf8');
 
 var production = new tumblrUpload.Blog({
-	tumblrId: 'my-special-tumblr',
-	anonId: 'HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ',
+	tumblr_id: 'my-special-tumblr',
+	user_form_key: 'cqDwBjBTmy2oQHmyCFI574NNJQk',
+	anon_id: 'HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ',
 	pfe: '1423532234',
 	pfp: 'ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4',
 	pfs: 'SffJuvtJ5jxorRqCQ7qF1wT5mVdw',
@@ -136,7 +138,7 @@ Returns an [http.ClientRequest object](https://nodejs.org/api/http.html#http_cla
 
 Type: `constructor`
 
-- `credentials` - Object or array previously-saved credentials. If array, follow this order: `tumblrId`, `anonId`, `pfe`, `pfp`, `pfs`, `pfu`
+- `credentials` - Object or array previously-saved credentials. If array, follow this order: `tumblr_id`, `user_form_key`, `anon_id`, `pfe`, `pfp`, `pfs`, `pfu`
 
 Returns an object with:
 
@@ -156,15 +158,15 @@ $ npm install --global tumblr-upload
 tumblr-upload index.tumblr.html
 
 # Provide credentials on the fly, without relying on separate files
-# Must be in the following order: tumblrId,anonId,pfe,pfp,pfs,pfu
-tumblr-upload --credentials my-special-tumblr,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845 index.tumblr.html
+# Must be in the following order: tumblr_id,user_form_key,anon_id,pfe,pfp,pfs,pfu
+tumblr-upload --credentials my-special-tumblr,cqDwBjBTmy2oQHmyCFI574NNJQk,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845 index.tumblr.html
 ```
 
 ### Options
 
 **`--credentials`**
 
-Specify comma-separed credentials in this order: tumblrId,anonId,pfe,pfp,pfs,pfu
+Specify comma-separed credentials, without spaces, in this order: tumblr_id,user_form_key,anon_id,pfe,pfp,pfs,pfu
 
 **`--help`**
 

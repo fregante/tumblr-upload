@@ -12,7 +12,7 @@ var cli = meow({
 		'  '+logSymbols.success+' Uploaded',
 		'',
 		'Options',
-		'  --credentials   Specify comma-separed credentials in this order: tumblrId,anonId,pfe,pfp,pfs,pfu',
+		'  --credentials   Specify comma-separed credentials in this order: tumblr_id,anon_id,pfe,pfp,pfs,pfu',
 		'',
 		'Usage',
 		'  Read more on: <tbp>',

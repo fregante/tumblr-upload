@@ -13,21 +13,22 @@ var appRoots = [
 
 /**
  * Set tumblr account to accept future uploads
- * @param {object|array} c  Credentials to use, object or array in this order: tumblrId, anonId, pfe, pfp, pfs, pfu
+ * @param {object|array} c  Credentials to use, object or array in this order: tumblr_id, user_form_key, anon_id, pfe, pfp, pfs, pfu
  */
 function Blog (c) {
 	var blog = this;
-	if (c && c.length === 6) {
+	if (c && c.length === 7) {
 		c = {
-			tumblrId: c[0],
-			anonId:   c[1],
-			pfe:      c[2],
-			pfp:      c[3],
-			pfs:      c[4],
-			pfu:      c[5],
+			tumblr_id:     c[0],
+			user_form_key: c[1],
+			anon_id:       c[2],
+			pfe:           c[3],
+			pfp:           c[4],
+			pfs:           c[5],
+			pfu:           c[6],
 		};
 	}
-	if (!c || !c.tumblrId || !c.anonId || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
+	if (!c || !c.tumblr_id || !c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
 		throw Error('Credentials missing! Use tumblr-upload.yml or specify them when calling upload()');
 	}
 
@@ -45,7 +46,7 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 	var options = {
 		host: 'www.tumblr.com',
 		port: 443,
-		path: '/customize_api/blog/'+pwd.tumblrId,
+		path: '/customize_api/blog/'+pwd.tumblr_id,
 		method: 'POST',
 		headers: {
 			'x-requested-with': 'XMLHttpRequest',
@@ -54,14 +55,14 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 			'content-type': 'application/json',
 			'accept': 'application/json, text/j avascript, */*; q=0.01',
 			'cache-control': 'no-cache',
-			'Cookie': 'logged_in=1; pfp='+pwd.pfp +'; pfs='+pwd.pfs +'; pfe='+pwd.pfe +'; pfu='+pwd.pfu + '; anon_id='+pwd.anonId+';',
-			'referer': 'https://www.tumblr.com/customize/'+pwd.tumblrId+'?redirect_to=/blog/'+pwd.tumblrId
+			'Cookie': 'logged_in=1; pfp='+pwd.pfp +'; pfs='+pwd.pfs +'; pfe='+pwd.pfe +'; pfu='+pwd.pfu + '; anon_id='+pwd.anon_id+';',
+			'referer': 'https://www.tumblr.com/customize/'+pwd.tumblr_id+'?redirect_to=/blog/'+pwd.tumblr_id
 		}
 	};
 	var httpBody = JSON.stringify({
 		'custom_theme': htmlTemplate,
-		'id': pwd.tumblrId,
-		'user_form_key': '9sjkkF4VL67wLECdsxDHsak7Y'
+		'id': pwd.tumblr_id,
+		'user_form_key': pwd.user_form_key
 	});
 
 	// do request
@@ -122,7 +123,7 @@ function upload (htmlTemplate, callback) {
 	});
 
 	// cheaply verify credentials
-	if (!c || !c.tumblrId || !c.anonId || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
+	if (!c || !c.tumblr_id || !c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
 		throw Error('Credentials missing! Use tumblr-upload.yml or specify them when calling upload(). I looked for that file in:\n'+paths.join('\n'));
 	}
 
