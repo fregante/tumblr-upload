@@ -1,4 +1,4 @@
-# tumblr-upload 
+# ![tumblr-](https://rawgit.com/bfred-it/tumblr-upload/master/media/tumblr.svg)upload 
 
 > Upload your Tumblr theme via node or CLI
 
@@ -176,7 +176,7 @@ Show help screen
 
 License: MIT © [Federico Brigante](https://twitter.com/bfred_it)
 
-Tumblr trademark belongs to [Tumblr, Inc](https://www.tumblr.com/)
+Tumblr trademarks belong to [Tumblr, Inc](https://www.tumblr.com/)
 
 tumblr-upload is NOT affiliated with, endorsed, or sponsored by Tumblr.
 
