@@ -18,5 +18,5 @@
     "smarttabs": true,
     "white": false,
     "browser": true,
-    "predef": ["define", "ActiveXObject", "ga", "gaPageData" ]
+    "predef": []
 }
