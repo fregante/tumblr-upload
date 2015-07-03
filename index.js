@@ -28,7 +28,7 @@ function Blog (c) {
 		};
 	}
 	if (!c || !c.tumblr_id || !c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
-		throw Error('Credentials missing! Use tumblr-upload.ini or specify them when calling upload()');
+		throw Error('Credentials missing or incomplete!');
 	}
 
 	blog.pwd = c;
@@ -41,7 +41,11 @@ function Blog (c) {
  * @return {ClientRequest}          Node ClientRequest method, can be .abort()'ed
  */
 Blog.prototype.upload = function (htmlTemplate, callback) {
-	var pwd = this.pwd;
+	if (typeof htmlTemplate !== 'string') {
+		throw new TypeError('The parameter `htmlTemplate` should be a string.');
+	}
+	var blog = this;
+	var pwd = blog.pwd;
 	var options = {
 		host: 'www.tumblr.com',
 		port: 443,
@@ -75,7 +79,7 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 		});
 		res.on('end', function () {
 			if (/Authentication required|permission/i.test(response)) {
-				callback('Authentication failed');
+				callback(new Error('Authentication failed'));
 			} else  {
 				try {
 					//verify that it's a valid json response
@@ -83,7 +87,7 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 
 					callback(false);
 				} catch (e) {
-					callback('Failed parsing of response: ' + response);
+					callback(new Error('Failed parsing of response: ' + response));
 				}
 			}
 		});
@@ -91,12 +95,13 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 
 	if (callback && callback.call) {
 		request.on('error', function(e) {
-			callback(e.message);
+			callback(new Error(e.message));
 		});
 	}
 
 	request.write(httpBody);
 	request.end();
+	return blog;
 };
 
 
@@ -104,14 +109,14 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
  * Upload specified template and use the settings in tumblr-upload.ini file
  * @see  Blog.prototype.upload
  */
-function uploadWithIniConfig (htmlTemplate, tumblrId, callback) {
+function uploadWithIniConfig (htmlTemplate, tumblr_id, callback) {
 	var c, paths = [];
 
 	if (typeof htmlTemplate !== 'string') {
 		throw new TypeError('The parameter `htmlTemplate` should be a string.');
 	}
-	if (typeof tumblrId !== 'string') {
-		throw new TypeError('The parameter `tumblrId` should be a string.');
+	if (typeof tumblr_id !== 'string') {
+		throw new TypeError('The parameter `tumblr_id` should be a string.');
 	}
 
 
@@ -127,7 +132,7 @@ function uploadWithIniConfig (htmlTemplate, tumblrId, callback) {
 
 	// were the credentials found?
 	if (!c) {
-		throw Error('Credentials missing! Use tumblr-upload.ini or specify them when calling upload(). I looked for that file in:\n'+paths.join('\n'));
+		throw Error('Credentials missing! I looked for tumblr-upload.ini in:\n'+paths.join('\n'));
 	}
 
 	// pick the right blog
@@ -139,7 +144,7 @@ function uploadWithIniConfig (htmlTemplate, tumblrId, callback) {
 
 	// cheaply verify credentials
 	if (!c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
-		throw Error('Credentials incomplete:' + JSON.stringify(c));
+		throw Error('Credentials incomplete: ' + JSON.stringify(c));
 	}
 
 	// upload template
