@@ -11,6 +11,10 @@
     "index.js",
     "cli.js"
   ],
+  "scripts": {
+    "test": "mocha --bail",
+    "test-all": "env VERIFY_UPLOAD=1 mocha --bail"
+  },
   "keywords": [
     "cli-app",
     "cli",
@@ -32,5 +36,11 @@
     "iniparser": "^1.0.5",
     "log-symbols": "^1.0.2",
     "meow": "^3.1.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "mock-fs": "^3.0.0",
+    "nock": "^2.7.0",
+    "should": "^7.0.1"
   }
 }

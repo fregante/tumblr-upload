@@ -1,4 +1,4 @@
-# ![tumblr-](https://rawgit.com/bfred-it/tumblr-upload/master/media/tumblr.svg)upload 
+# ![tumblr-](https://rawgit.com/bfred-it/tumblr-upload/master/media/tumblr.svg)upload [![Build Status](https://travis-ci.org/bfred-it/tumblr-upload.svg?branch=master)](https://travis-ci.org/bfred-it/tumblr-upload)
 
 > Upload your Tumblr theme via node or CLI
 
