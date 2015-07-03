@@ -1,10 +1,9 @@
 //@todo: cancel upload if a new upload is requested (debounce, but better)
 //@todo: prevent upload if file is empty. tumblr will fail silently
 'use strict';
-var fs = require('fs');
 var https = require('https');
 var path = require('path');
-var yaml = require('js-yaml');
+var ini = require('iniparser');
 var appRoots = [
 	process.cwd(),
 	path.dirname(require.main.filename),
@@ -29,7 +28,7 @@ function Blog (c) {
 		};
 	}
 	if (!c || !c.tumblr_id || !c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
-		throw Error('Credentials missing! Use tumblr-upload.yml or specify them when calling upload()');
+		throw Error('Credentials missing! Use tumblr-upload.ini or specify them when calling upload()');
 	}
 
 	blog.pwd = c;
@@ -102,34 +101,50 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 
 
 /**
- * Upload specified template and use the settings in tumblr-upload.yml file
+ * Upload specified template and use the settings in tumblr-upload.ini file
  * @see  Blog.prototype.upload
  */
-function upload (htmlTemplate, callback) {
+function uploadWithIniConfig (htmlTemplate, tumblrId, callback) {
 	var c, paths = [];
+
+	if (typeof htmlTemplate !== 'string') {
+		throw new TypeError('The parameter `htmlTemplate` should be a string.');
+	}
+	if (typeof tumblrId !== 'string') {
+		throw new TypeError('The parameter `tumblrId` should be a string.');
+	}
+
 
 	// try to load config file from all the possible paths
 	appRoots.some(function (appRoot) {
 		try {
-			c = fs.readFileSync(appRoot + '/tumblr-upload.yml', 'utf8');
-			c = yaml.safeLoad(c);
+			var filename = appRoot + '/tumblr-upload.ini';
+			paths.push(path.dirname(filename));
+			c = ini.parseSync(filename);
 			return true;
-		} catch (e) {
-			var file = e.message.match('no such file or directory \'(.+)\'');
-			if (file) {
-				paths.push(path.dirname(file[1]));
-			}
-		}
+		} catch (e) {}
 	});
 
+	// were the credentials found?
+	if (!c) {
+		throw Error('Credentials missing! Use tumblr-upload.ini or specify them when calling upload(). I looked for that file in:\n'+paths.join('\n'));
+	}
+
+	// pick the right blog
+	c = c[tumblr_id];
+	if (!c) {
+		throw Error('Blog `'+tumblr_id+'` doesn\'t exist in the config file '+paths.pop());
+	}
+	c.tumblr_id = tumblr_id;
+
 	// cheaply verify credentials
-	if (!c || !c.tumblr_id || !c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
-		throw Error('Credentials missing! Use tumblr-upload.yml or specify them when calling upload(). I looked for that file in:\n'+paths.join('\n'));
+	if (!c.user_form_key || !c.anon_id || !c.pfe || !c.pfp || !c.pfs || !c.pfu) {
+		throw Error('Credentials incomplete:' + JSON.stringify(c));
 	}
 
 	// upload template
 	return new Blog(c).upload(htmlTemplate, callback);
 }
 
-module.exports = upload;
+module.exports = uploadWithIniConfig;
 module.exports.Blog = Blog;

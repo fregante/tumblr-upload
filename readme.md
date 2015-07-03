@@ -14,9 +14,9 @@ Until now the only way to upload your custom theme to Tumblr was through their w
 - [Setup](#setup)
   - [Getting your credentials](#getting-your-credentials)
   - [Using your credentials](#using-your-credentials)
-    - [Sample `tumblr-upload.yml`](#sample-tumblr-uploadyml)
+    - [Sample `tumblr-upload.ini`](#sample-tumblr-upload-ini)
 - [Usage](#usage)
-  - [With `tumblr-upload.yml` project file](#with-tumblr-uploadyml-project-file)
+  - [With `tumblr-upload.ini` project file](#with-tumblr-upload-ini-project-file)
   - [With credentials passed as an argument](#with-credentials-passed-as-an-argument)
 - [API](#api)
   - [tumblrUpload(htmlTemplate, callback)](#tumblruploadhtmltemplate-callback)
@@ -62,31 +62,38 @@ Cookies will be invalidated on logout, so it's suggested to do the following in 
 
 ### Using your credentials
 
-You can specify these values [in node](#with-credentials-passed-as-an-argument), [via command line](#cli-examples), or in the `tumblr-upload.yml` file in your project root.
+You can specify these values [in node](#with-credentials-passed-as-an-argument), [via command line](#cli-examples), or in the `tumblr-upload.ini` file in your project root.
 
-#### Sample `tumblr-upload.yml`
+#### Sample `tumblr-upload.ini`
 
-```yml
-tumblr_id: my-special-tumblr
-user_form_key: cqDwBjBTmy2oQHmyCFI574NNJQk
-anon_id: HTWJBOYOABHOFGDSLQIXNISORNJCVXSZ
-pfe: 1433542234
-pfp: ihx7GPOIpOm1YoVN1Np7awxBmbXdsz4rHDFPn6z4
-pfs: SpfJuvtJ5jxoDqCQ7qF1wA5mVdw
-pfu: 5252888
+```ini
+[my-special-tumblr]
+	user_form_key: cqDwBjBTmy2oQHmyCFI574NNJQk
+	anon_id: HTWJBOYOABHOFGDSLQIXNISORNJCVXSZ
+	pfe: 1433542234
+	pfp: ihx7GPOIpOm1YoVN1Np7awxBmbXdsz4rHDFPn6z4
+	pfs: SpfJuvtJ5jxoDqCQ7qF1wA5mVdw
+	pfu: 5252888
+[my-other-tumblr]
+	user_form_key: myCFI574NNJQkcqDwBjBTmy2oQH
+	anon_id: DSLQIXNISORNJCVXSZHTWJBOYOABHOFG
+	pfe: 4223414335
+	pfp: p7awxBmbXdsz4rHDFPn6z4ihx7GPOIpOm1YoVN1N
+	pfs: xoDqCQ7qF1wA5mVdwSpfJuvtJ5j
+	pfu: 8885252
 ```
 
 
 ## Usage
 
-### With `tumblr-upload.yml` project file
+### With `tumblr-upload.ini` project file
 
 ```js
 var tumblrUpload = require('tumblr-upload');
 var fs = require('fs');
 var template = fs.readFileSync('index.tumblr.html', 'utf8');
 
-tumblrUpload(template, function (err) {
+tumblrUpload(template, 'my-special-tumblr', function (err) {
 	if (err) {
 		console.error(err);
 		return;
@@ -125,13 +132,14 @@ production.upload(template, function (err) {
 ## API
 
 
-### tumblrUpload(htmlTemplate, callback)
+### tumblrUpload(htmlTemplate, tumblr_id, callback)
 
-This will upload the template using the credentials in `tumblr-upload.yml` in your project's root (or cwd).
+This will upload the template using the credentials in `tumblr-upload.ini` in your project's root (or cwd).
 
 Returns an [http.ClientRequest object](https://nodejs.org/api/http.html#http_class_http_clientrequest) that can be `.abort()`'ed if necessary.
 
 - `htmlTemplate` - Tumblr template to upload (the actual theme text, not the filename)
+- `tumblr_id` - Your Tumblr ID (i.e. `something` in `something.tumblr.com`)
 - `callback(err)` - Function to call after the upload. `Err` will contain the error message, or it will be undefined if successful.
 
 ### new tumblrUpload.Blog(credentials)
@@ -142,7 +150,9 @@ Type: `constructor`
 
 Returns an object with:
 
-* `upload` *(function)* - Same as the [`tumblrUpload()`](#tumblruploadhtmltemplate-callback) function but will use the credentials provided in `.Blog(…)`
+* `upload(htmlTemplate, callback)` *(function)*
+	+ `htmlTemplate` - Tumblr template to upload (the actual theme text, not the filename)
+	+ `callback(err)` - Function to call after the upload. `Err` will contain the error message, or it will be undefined if successful.
 
 
 ## CLI
@@ -154,12 +164,12 @@ $ npm install --global tumblr-upload
 ### CLI examples
 
 ```sh
-# Basic usage, will use tumblr-upload.yml
-tumblr-upload index.tumblr.html
+# Basic usage, will use tumblr-upload.ini
+tumblr-upload my-special-tumblr index.tumblr.html
 
 # Provide credentials on the fly, without relying on separate files
 # Must be in the following order: tumblr_id,user_form_key,anon_id,pfe,pfp,pfs,pfu
-tumblr-upload --credentials my-special-tumblr,cqDwBjBTmy2oQHmyCFI574NNJQk,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845 index.tumblr.html
+tumblr-upload my-special-tumblr index.tumblr.html --credentials cqDwBjBTmy2oQHmyCFI574NNJQk,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845 
 ```
 
 ### Options
