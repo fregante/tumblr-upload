@@ -8,9 +8,9 @@ var nock = require('nock');
 var fsMock = require('mock-fs');
 var fs = require('fs');
 
-var tumblrUpload = require('./');
+var tumblrUpload = require('../');
 var http = require('http');
-var should = require('should');
+require('should');
 
 var credentialsIni = {
 	valid: fs.readFileSync('fixtures/tumblr-upload.ini', 'utf8'),
@@ -39,8 +39,7 @@ var credentialsArray = [
 	credentials.pfu,
 ];
 
-var wrongCredentialsArray = credentialsArray.slice();
-wrongCredentialsArray[2] = 'WRZLKTSEBTTHTFHXWESAAWS';
+var wrongCredentialsArray = ',,,,,,,';
 
 function getRandomTemplate () {
 	return Math.random().toString().substr(2);
@@ -85,8 +84,14 @@ function verifyUpload (blog, template, callback) {
 	verify();
 }
 
-function mockNextUpload (tumblr_id) {
-	nock('https://www.tumblr.com').post('/customize_api/blog/'+tumblr_id);
+function mockNextUpload (tumblr_id, response) {
+	var call = nock('https://www.tumblr.com')
+	           .post('/customize_api/blog/'+tumblr_id);
+	if (response === false) {
+		call.replyWithError('something awful happened');
+	} else if (response) {
+		call.reply(http, response);
+	}
 }
 
 describe('tumblrUpload.Blog', function(){
@@ -120,9 +125,21 @@ describe('tumblrUpload.Blog', function(){
 	});
 
 	describe('instance.upload()', function(){
+	  it('should error when the template is not specified', function(){
+			(function () {
+				var blog = new tumblrUpload.Blog(credentials);
+				blog.upload();
+			}).should.throw('The parameter `htmlTemplate` should be a string.');
+	  });
+
+	  it('should not error when a callback is not specified', function(){
+			mockNextUpload(credentials.tumblr_id);
+			var blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate);
+	  });
 
 	  it('should upload successfully', function(done){
-			var blog = new tumblrUpload.Blog(credentialsArray);
+			var blog = new tumblrUpload.Blog(credentials);
 			blog.upload(randomTemplate, function (err) {
 				if (err) {
 					throw err;
@@ -134,14 +151,37 @@ describe('tumblrUpload.Blog', function(){
 	  it('should fail to upload because of credentials', function(done){
 			var blog = new tumblrUpload.Blog(wrongCredentialsArray);
 			blog.upload(randomTemplate, function (err) {
-				done(should.ifError(err));
+				(function () {
+					if (err) {
+						throw err;
+					}
+				}).should.throw('Authentication failed');
+				done();
+			});
+	  });
+
+	  it('should detect unsupported server responses', function(done){
+			mockNextUpload(credentials.tumblr_id, 'gibberish');
+			var blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate, function (err) {
+				err.should.be.Error(); // somehow ".should.throw" fails here…
+				done();
+			});
+	  });
+
+	  it('should detect a network error', function(done){
+			mockNextUpload(credentials.tumblr_id, false);
+			var blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate, function (err) {
+				err.should.be.Error();
+				done();
 			});
 	  });
 
 	  if (WILL_VERIFY_UPLOAD) {
 		  it('should upload successfully and Tumblr should show the new theme', function(done){
 		  	this.timeout(30000);
-				var blog = new tumblrUpload.Blog(credentialsArray);
+				var blog = new tumblrUpload.Blog(credentials);
 				var template = getRandomTemplate(); // need to generate a unique one
 				blog.upload(template, function (err) {
 					if (err) {
