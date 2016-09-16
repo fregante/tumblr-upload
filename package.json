@@ -1,6 +1,6 @@
 {
   "name": "tumblr-upload",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Upload your Tumblr theme via node or CLI",
   "main": "index.js",
   "repository": "bfred-it/tumblr-upload",
