@@ -1,6 +1,9 @@
-# ![tumblr-](https://rawgit.com/bfred-it/tumblr-upload/master/media/tumblr.svg)upload [![Build Status](https://travis-ci.org/bfred-it/tumblr-upload.svg?branch=master)](https://travis-ci.org/bfred-it/tumblr-upload) [![Coverage Status](https://coveralls.io/repos/bfred-it/tumblr-upload/badge.svg)](https://coveralls.io/r/bfred-it/tumblr-upload)
+# tumblr-upload
 
 > Upload your Tumblr theme via node or CLI
+
+[![Build Status](https://travis-ci.org/bfred-it/tumblr-upload.svg?branch=master)](https://travis-ci.org/bfred-it/tumblr-upload)
+[![Coverage Status](https://coveralls.io/repos/bfred-it/tumblr-upload/badge.svg)](https://coveralls.io/r/bfred-it/tumblr-upload)
 
 Until now the only way to upload your custom theme to Tumblr was through their website, **manually**, by copying and pasting it into a form.
 
