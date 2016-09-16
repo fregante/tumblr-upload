@@ -1,52 +1,52 @@
 /* global describe, it */
 'use strict';
 
-var WILL_VERIFY_UPLOAD = !!process.env.VERIFY_UPLOAD;
+const WILL_VERIFY_UPLOAD = Boolean(process.env.VERIFY_UPLOAD);
 
 // process.env.DEBUG = 'nock.*';
-var nock = require('nock');
-var fsMock = require('mock-fs');
-var fs = require('fs');
+const fs = require('fs');
+const http = require('http');
+const nock = require('nock');
+const fsMock = require('mock-fs');
 
-var tumblrUpload = require('../');
-var http = require('http');
+const tumblrUpload = require('../');
 require('should');
 
-var credentialsIni = {
+const credentialsIni = {
 	valid: fs.readFileSync('fixtures/tumblr-upload.ini', 'utf8'),
 	incomplete: fs.readFileSync('fixtures/tumblr-upload-incomplete.ini', 'utf8'),
 	invalid: fs.readFileSync('fixtures/tumblr-upload-invalid.ini', 'utf8'),
-	empty: fs.readFileSync('fixtures/tumblr-upload-empty.ini', 'utf8'),
+	empty: fs.readFileSync('fixtures/tumblr-upload-empty.ini', 'utf8')
 };
 
-var credentials = {
+const credentials = {
 	tumblr_id: 'ultrasweetnachostudent',
 	user_form_key: 'zV6hVQTJ9VId6Bm1WLHZSTpJcE',
 	anon_id: 'WRZLKTSEBTTHTFHXWTYCULNQBAESAAWS',
 	pfe: '1443671682',
 	pfp: 'Z6ejAQF9HmJgjGdp7dMtIOpPzLiY2hzYdF3JP6su',
 	pfs: 'awsHPTIk3RDfGHQINHBJw8m4ilo',
-	pfu: '179409735',
+	pfu: '179409735'
 };
 
-var credentialsArray = [
+const credentialsArray = [
 	credentials.tumblr_id,
 	credentials.user_form_key,
 	credentials.anon_id,
 	credentials.pfe,
 	credentials.pfp,
 	credentials.pfs,
-	credentials.pfu,
+	credentials.pfu
 ];
 
-var wrongCredentialsArray = ',,,,,,,';
+const wrongCredentialsArray = ',,,,,,,';
 
-function getRandomTemplate () {
+function getRandomTemplate() {
 	return Math.random().toString().substr(2);
 }
-var randomTemplate = getRandomTemplate();
+const randomTemplate = getRandomTemplate();
 
-function verifyCredentials (blog) {
+function verifyCredentials(blog) {
 	if (!blog.pwd ||
 			!blog.pwd.tumblr_id ||
 			!blog.pwd.user_form_key ||
@@ -55,25 +55,25 @@ function verifyCredentials (blog) {
 			!blog.pwd.pfp ||
 			!blog.pwd.pfs ||
 			!blog.pwd.pfu) {
-		throw Error('Some or all credentials were not set');
+		throw new Error('Some or all credentials were not set');
 	}
 }
 
-function verifyUpload (blog, template, callback) {
-	var tryCount = 0;
-	function verify () {
+function verifyUpload(blog, template, callback) {
+	let tryCount = 0;
+	function verify() {
 		tryCount += 1;
 		http.get({
-				host: blog.pwd.tumblr_id + '.tumblr.com'
-			}, function(response) {
+			host: blog.pwd.tumblr_id + '.tumblr.com'
+		}, response => {
 			// Continuously update stream with data
-			var body = '';
-			response.on('data', function(d) {
+			let body = '';
+			response.on('data', d => {
 				body += d;
 			});
-			response.on('end', function() {
+			response.on('end', () => {
 				if (body.indexOf(template) < 0) {
-					console.log('Try '+ tryCount +': The new template is not yet on Tumblr:', template);
+					console.log('Try ' + tryCount + ': The new template is not yet on Tumblr:', template);
 					setTimeout(verify, tryCount < 10 ? 500 : 1500);
 				} else {
 					callback();
@@ -84,9 +84,9 @@ function verifyUpload (blog, template, callback) {
 	verify();
 }
 
-function mockNextUpload (tumblr_id, response) {
-	var call = nock('https://www.tumblr.com')
-	           .post('/customize_api/blog/'+tumblr_id);
+function mockNextUpload(tumblr_id, response) {
+	const call = nock('https://www.tumblr.com')
+		.post('/customize_api/blog/' + tumblr_id);
 	if (response === false) {
 		call.replyWithError('something awful happened');
 	} else if (response) {
@@ -94,137 +94,134 @@ function mockNextUpload (tumblr_id, response) {
 	}
 }
 
-describe('tumblrUpload.Blog', function(){
-	describe('new tumblrUpload.Blog()', function(){
-
-		it('should error when credentials are missing', function(){
-			(function () {
-				new tumblrUpload.Blog();
+describe('tumblrUpload.Blog', () => {
+	describe('new tumblrUpload.Blog()', () => {
+		it('should error when credentials are missing', () => {
+			(() => {
+				return new tumblrUpload.Blog();
 			}).should.throw('Credentials missing or incomplete!');
 		});
 
-		it('should error when credentials are incomplete', function(){
-			(function () {
-				new tumblrUpload.Blog({
+		it('should error when credentials are incomplete', () => {
+			(() => {
+				return new tumblrUpload.Blog({
 					tumblr_id: 'something',
 					pfs: 'more',
-					pfu: 'else',
+					pfu: 'else'
 				});
 			}).should.throw('Credentials missing or incomplete!');
 		});
 
-		it('should set all credentials from an object', function(){
-			var blog = new tumblrUpload.Blog(credentials);
+		it('should set all credentials from an object', () => {
+			const blog = new tumblrUpload.Blog(credentials);
 			verifyCredentials(blog);
 		});
 
-		it('should set all credentials from an array', function(){
-			var blog = new tumblrUpload.Blog(credentialsArray);
+		it('should set all credentials from an array', () => {
+			const blog = new tumblrUpload.Blog(credentialsArray);
 			verifyCredentials(blog);
 		});
 	});
 
-	describe('instance.upload()', function(){
-	  it('should error when the template is not specified', function(){
-			(function () {
-				var blog = new tumblrUpload.Blog(credentials);
+	describe('instance.upload()', () => {
+		it('should error when the template is not specified', () => {
+			(() => {
+				const blog = new tumblrUpload.Blog(credentials);
 				blog.upload();
 			}).should.throw('The parameter `htmlTemplate` should be a string.');
-	  });
+		});
 
-	  it('should not error when a callback is not specified', function(){
+		it('should not error when a callback is not specified', () => {
 			mockNextUpload(credentials.tumblr_id);
-			var blog = new tumblrUpload.Blog(credentials);
+			const blog = new tumblrUpload.Blog(credentials);
 			blog.upload(randomTemplate);
-	  });
+		});
 
-	  it('should upload successfully', function(done){
-			var blog = new tumblrUpload.Blog(credentials);
-			blog.upload(randomTemplate, function (err) {
+		it('should upload successfully', done => {
+			const blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate, err => {
 				if (err) {
 					throw err;
 				}
 				done();
 			});
-	  });
+		});
 
-	  it('should fail to upload because of credentials', function(done){
-			var blog = new tumblrUpload.Blog(wrongCredentialsArray);
-			blog.upload(randomTemplate, function (err) {
-				(function () {
+		it('should fail to upload because of credentials', done => {
+			const blog = new tumblrUpload.Blog(wrongCredentialsArray);
+			blog.upload(randomTemplate, err => {
+				(() => {
 					if (err) {
 						throw err;
 					}
 				}).should.throw('Authentication failed');
 				done();
 			});
-	  });
+		});
 
-	  it('should detect unsupported server responses', function(done){
+		it('should detect unsupported server responses', done => {
 			mockNextUpload(credentials.tumblr_id, 'gibberish');
-			var blog = new tumblrUpload.Blog(credentials);
-			blog.upload(randomTemplate, function (err) {
+			const blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate, err => {
 				err.should.be.Error(); // somehow ".should.throw" fails here…
 				done();
 			});
-	  });
+		});
 
-	  it('should detect a network error', function(done){
+		it('should detect a network error', done => {
 			mockNextUpload(credentials.tumblr_id, false);
-			var blog = new tumblrUpload.Blog(credentials);
-			blog.upload(randomTemplate, function (err) {
+			const blog = new tumblrUpload.Blog(credentials);
+			blog.upload(randomTemplate, err => {
 				err.should.be.Error();
 				done();
 			});
-	  });
+		});
 
-	  if (WILL_VERIFY_UPLOAD) {
-		  it('should upload successfully and Tumblr should show the new theme', function(done){
-		  	this.timeout(30000);
-				var blog = new tumblrUpload.Blog(credentials);
-				var template = getRandomTemplate(); // need to generate a unique one
-				blog.upload(template, function (err) {
+		if (WILL_VERIFY_UPLOAD) {
+			it('should upload successfully and Tumblr should show the new theme', function (done) {
+				this.timeout(30000);
+				const blog = new tumblrUpload.Blog(credentials);
+				const template = getRandomTemplate(); // need to generate a unique one
+				blog.upload(template, err => {
 					if (err) {
 						throw err;
 					}
 					verifyUpload(blog, template, done);
 				});
-		  });
-	  } else {
-	  	it.skip('Actual upload verification is run with `npm run test-all`');
-	  }
-
+			});
+		} else {
+			it.skip('Actual upload verification is run with `npm run test-all`');
+		}
 	});
 });
 
-describe('tumblrUpload()', function(){
-
-	it('should error when the template is not specified', function(){
-		(function () {
+describe('tumblrUpload()', () => {
+	it('should error when the template is not specified', () => {
+		(() => {
 			tumblrUpload();
 		}).should.throw('The parameter `htmlTemplate` should be a string.');
 	});
 
-	it('should error when the tumblr_id is not specified', function(){
-		(function () {
+	it('should error when the tumblr_id is not specified', () => {
+		(() => {
 			tumblrUpload(randomTemplate);
 		}).should.throw('The parameter `tumblr_id` should be a string.');
 	});
 
-	it('should error when the config file is not found', function(){
+	it('should error when the config file is not found', () => {
 		fsMock();
-		(function () {
+		(() => {
 			tumblrUpload(randomTemplate, credentials.tumblr_id);
 		}).should.throw(/^Credentials missing! I looked for tumblr-upload\.ini/);
 		fsMock.restore();
 	});
 
-	function testIniFile (iniId, error, tumblr_id) {
-		return function () {
+	function testIniFile(iniId, error, tumblr_id) {
+		return () => {
 			fsMock({
 				'tumblr-upload.ini': credentialsIni[iniId]
 			});
-			(function () {
+			(() => {
 				tumblrUpload(randomTemplate, tumblr_id || 'lololol');
 			}).should.throw(error);
 			fsMock.restore();
@@ -232,11 +229,11 @@ describe('tumblrUpload()', function(){
 	}
 
 	it('should error when the config file is empty',
-		testIniFile('empty', /^Blog `[^`]+` doesn\'t exist in the config file/)
+		testIniFile('empty', /^Blog `[^`]+` doesn't exist in the config file/)
 	);
 
 	it('should error when the config file is invalid',
-		testIniFile('invalid', /^Blog `[^`]+` doesn\'t exist in the config file/)
+		testIniFile('invalid', /^Blog `[^`]+` doesn't exist in the config file/)
 	);
 
 	it('should error when the config file is incomplete',
@@ -244,17 +241,16 @@ describe('tumblrUpload()', function(){
 	);
 
 	it('should error when the tumblr_id is not found in the config',
-		testIniFile('valid', /^Blog `[^`]+` doesn\'t exist in the config file/)
+		testIniFile('valid', /^Blog `[^`]+` doesn't exist in the config file/)
 	);
 
-	it('should set all credentials from the ini file', function(){
+	it('should set all credentials from the ini file', () => {
 		mockNextUpload(credentials.tumblr_id);
 		fsMock({
 			'tumblr-upload.ini': credentialsIni.valid
 		});
-		var blog = tumblrUpload(randomTemplate, credentials.tumblr_id);
+		const blog = tumblrUpload(randomTemplate, credentials.tumblr_id);
 		fsMock.restore();
 		verifyCredentials(blog);
 	});
-
 });

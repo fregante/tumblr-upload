@@ -12,7 +12,7 @@
     "cli.js"
   ],
   "scripts": {
-    "test": "mocha --bail",
+    "test": "xo; mocha --bail",
     "test-all": "env VERIFY_UPLOAD=1 mocha --bail",
     "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
@@ -45,6 +45,16 @@
     "mocha-lcov-reporter": "0.0.2",
     "mock-fs": "^3.0.0",
     "nock": "^2.7.0",
-    "should": "^7.0.1"
+    "should": "^7.0.1",
+    "xo": "^0.16.0"
+  },
+  "xo": {
+    "esnext": true,
+    "env": [
+      "node"
+    ],
+    "rules": {
+      "camelcase": 0
+    }
   }
 }
