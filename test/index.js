@@ -90,7 +90,10 @@ function mockNextUpload(tumblr_id, response) {
 	if (response === false) {
 		call.replyWithError('something awful happened');
 	} else if (response) {
-		call.reply(http, response);
+		call.reply(http, () => {
+			nock.restore();
+			return response;
+		});
 	}
 }
 
@@ -138,6 +141,7 @@ describe('tumblrUpload.Blog', () => {
 		});
 
 		it('should upload successfully', done => {
+			mockNextUpload(credentials.tumblr_id, '{}');
 			const blog = new tumblrUpload.Blog(credentials);
 			blog.upload(randomTemplate, err => {
 				if (err) {

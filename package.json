@@ -33,19 +33,19 @@
   },
   "homepage": "https://github.com/bfred-it/tumblr-upload",
   "dependencies": {
-    "app-root-path": "^1.0.0",
+    "app-root-path": "^2.0.1",
     "iniparser": "^1.0.5",
     "log-symbols": "^1.0.2",
     "meow": "^3.1.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
-    "istanbul": "^0.3.17",
+    "istanbul": "^0.4.5",
     "mocha": "*",
-    "mocha-lcov-reporter": "0.0.2",
+    "mocha-lcov-reporter": "^1.2.0",
     "mock-fs": "^3.0.0",
-    "nock": "^2.7.0",
-    "should": "^7.0.1",
+    "nock": "^8.0.0",
+    "should": "^11.1.0",
     "xo": "^0.16.0"
   },
   "xo": {
