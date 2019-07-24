@@ -53,7 +53,7 @@ Blog.prototype.upload = function (htmlTemplate, callback) {
 		method: 'POST',
 		headers: {
 			'x-requested-with': 'XMLHttpRequest',
-			'x-for-issues': 'https://github.com/bfred-it/tumblr-upload',
+			'x-for-issues': 'https://github.com/fregante/tumblr-upload',
 			'pragma': 'no-cache',
 			'content-type': 'application/json',
 			'accept': 'application/json, text/j avascript, */*; q=0.01',

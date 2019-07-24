@@ -2,36 +2,41 @@
   "name": "tumblr-upload",
   "version": "0.8.1",
   "description": "Upload your Tumblr theme via node or CLI",
-  "main": "index.js",
-  "repository": "bfred-it/tumblr-upload",
-  "bin": {
-    "tumblr-upload": "cli.js"
-  },
+  "keywords": [
+    "bin",
+    "cli",
+    "cli-app",
+    "deploy",
+    "nodejs",
+    "theme",
+    "tumblr",
+    "upload"
+  ],
+  "repository": "fregante/tumblr-upload",
+  "license": "MIT",
+  "author": "Federico Brigante",
   "files": [
     "index.js",
     "cli.js"
   ],
+  "main": "index.js",
+  "bin": {
+    "tumblr-upload": "cli.js"
+  },
   "scripts": {
+    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "test": "xo; mocha --bail",
-    "test-all": "env VERIFY_UPLOAD=1 mocha --bail",
-    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "test-all": "env VERIFY_UPLOAD=1 mocha --bail"
   },
-  "keywords": [
-    "cli-app",
-    "cli",
-    "bin",
-    "nodejs",
-    "tumblr",
-    "upload",
-    "deploy",
-    "theme"
-  ],
-  "author": "Federico Brigante",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/bfred-it/tumblr-upload/issues"
+  "xo": {
+    "env": [
+      "node"
+    ],
+    "esnext": true,
+    "rules": {
+      "camelcase": 0
+    }
   },
-  "homepage": "https://github.com/bfred-it/tumblr-upload",
   "dependencies": {
     "app-root-path": "^2.0.1",
     "iniparser": "^1.0.5",
@@ -47,14 +52,5 @@
     "nock": "^8.0.0",
     "should": "^11.1.0",
     "xo": "^0.16.0"
-  },
-  "xo": {
-    "esnext": true,
-    "env": [
-      "node"
-    ],
-    "rules": {
-      "camelcase": 0
-    }
   }
 }

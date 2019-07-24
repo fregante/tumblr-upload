@@ -2,8 +2,8 @@
 
 > Upload your Tumblr theme via node or CLI
 
-[![Build Status](https://travis-ci.org/bfred-it/tumblr-upload.svg?branch=master)](https://travis-ci.org/bfred-it/tumblr-upload)
-[![Coverage Status](https://coveralls.io/repos/bfred-it/tumblr-upload/badge.svg)](https://coveralls.io/r/bfred-it/tumblr-upload)
+[![Build Status](https://travis-ci.org/fregante/tumblr-upload.svg?branch=master)](https://travis-ci.org/fregante/tumblr-upload)
+[![Coverage Status](https://coveralls.io/repos/fregante/tumblr-upload/badge.svg)](https://coveralls.io/r/fregante/tumblr-upload)
 
 Until now the only way to upload your custom theme to Tumblr was through their website, **manually**, by copying and pasting it into a form.
 
@@ -172,7 +172,7 @@ tumblr-upload my-special-tumblr index.tumblr.html
 
 # Provide credentials on the fly, without relying on separate files
 # Must be in the following order: tumblr_id,user_form_key,anon_id,pfe,pfp,pfs,pfu
-tumblr-upload my-special-tumblr index.tumblr.html --credentials cqDwBjBTmy2oQHmyCFI574NNJQk,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845 
+tumblr-upload my-special-tumblr index.tumblr.html --credentials cqDwBjBTmy2oQHmyCFI574NNJQk,HTWJBOYOBBHOFGDSQQIXNISORNJCVXSZ,1423532234,ihx7GPOIpOm1YoVN1Rq7awxBfbXdsz4rHDFPe6z4,SffJuvtJ5jxorRqCQ7qF1wT5mVdw,5258845
 ```
 
 ### Options
@@ -185,9 +185,11 @@ Specify comma-separed credentials, without spaces, in this order: tumblr_id,user
 
 Show help screen
 
-## Legal
+## License
 
-License: MIT © [Federico Brigante](https://twitter.com/bfred_it)
+MIT © [Federico Brigante](https://bfred.it)
+
+## Legal
 
 Tumblr trademarks belong to [Tumblr, Inc](https://www.tumblr.com/)
 
